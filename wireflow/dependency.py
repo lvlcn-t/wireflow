@@ -181,9 +181,6 @@ class DIContainer(Injector):
 
     async def resolve(self, dependency: type[T], name: str | None = None) -> T:
         """Resolve a dependency from the container."""
-        if name == "-1":
-            raise ValueError("name cannot be a reserved keyword: '-1'")
-
         if not name:
             return await self._resolve(dependency, dependency.__name__)
 
