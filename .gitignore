@@ -84,5 +84,8 @@ coverage.xml
 .hypothesis/
 .pytest_cache/
 
+# Packaging
+dist/
+
 # Temporary directory
 .tmp/

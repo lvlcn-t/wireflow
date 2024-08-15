@@ -1,73 +1,184 @@
-# Project Name<!-- omit from toc -->
+# Wireflow - DI Container for Python
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
-    <a href="/../../commits/" title="Last Commit"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/lvlcn-t/meta?style=flat"></a>
-    <a href="/../../issues" title="Open Issues"><img alt="Open Issues" src="https://img.shields.io/github/issues/lvlcn-t/meta?style=flat"></a>
+    <a href="/../../commits/" title="Last Commit"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/lvlcn-t/wireflow?style=flat"></a>
+    <a href="/../../issues" title="Open Issues"><img alt="Open Issues" src="https://img.shields.io/github/issues/lvlcn-t/wireflow?style=flat"></a>
 </p>
 <!-- markdownlint-enable MD033 -->
 
-- [About this component](#about-this-component)
+- [What is Wireflow?](#what-is-wireflow)
+  - [Why Use Dependency Injection?](#why-use-dependency-injection)
+  - [Key Features of Wireflow](#key-features-of-wireflow)
 - [Installation](#installation)
-  - [Binary](#binary)
-  - [Container Image](#container-image)
-  - [Helm](#helm)
-- [Usage](#usage)
-  - [Image](#image)
+- [Quick Start](#quick-start)
+- [Advanced Usage](#advanced-usage)
+  - [Example with Interface and Lifecycle Hooks](#example-with-interface-and-lifecycle-hooks)
+  - [What’s Happening Here?](#whats-happening-here)
 - [Code of Conduct](#code-of-conduct)
 - [Working Language](#working-language)
 - [Support and Feedback](#support-and-feedback)
 - [How to Contribute](#how-to-contribute)
 - [Licensing](#licensing)
 
-_tbd_
+## What is Wireflow?
 
-## About this component
+Wireflow is a simple yet powerful **Dependency Injection (DI)** container for Python. It helps you manage and organize dependencies in your Python applications, making your code cleaner, more modular, and easier to maintain.
 
-_tbd_
+Whether you're building a small script or a large application, Wireflow lets you register, resolve, and inject dependencies effortlessly, avoiding common pitfalls like tightly coupled code or manual dependency management.
+
+### Why Use Dependency Injection?
+
+Dependency Injection is a design pattern used to implement Inversion of Control (IoC) between classes and their dependencies. Instead of creating dependencies manually within a class, you "inject" them from the outside. This makes your code more flexible and easier to test.
+
+### Key Features of Wireflow
+
+- **Easy to Use**: Simple API that anyone can pick up quickly.
+- **Singleton Support**: Manage dependencies as singletons to ensure only one instance exists.
+- **Automatic Injection**: Use the `inject` decorator to automatically inject dependencies into your functions.
+- **Lifecycle Hooks**: Define custom initialization and destruction behaviors for your dependencies.
+- **Scoped Dependencies**: Manage dependencies within specific scopes, like per-request or per-session.
 
 ## Installation
 
-_tbd_
+To install Wireflow, simply run:
 
-### Binary
+```bash
+pip install wireflow
+```
 
-_tbd_
+And import it into your Python code:
 
-### Container Image
+```python
+import wireflow
+```
 
-_tbd_
+## Quick Start
 
-### Helm
+Getting started with Wireflow is straightforward. Here’s a basic example:
 
-_tbd_
+```python
+import asyncio
 
-## Usage
+from wireflow import container
 
-_tbd_
 
-### Image
+class Greeter:
+    def greet(self) -> str:
+        return "Hello, World!"
 
-_tbd_
+
+async def main() -> None:
+    # Register the Greeter class as a dependency
+    await container.provide(
+        dependency=Greeter(),
+        singleton=True,  # Ensures only one instance is created
+    )
+
+    # Resolve the dependency and use it
+    greeter = await container.resolve(Greeter)
+    print(greeter.greet())
+
+
+# Run the example
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+In this example, we:
+
+1. **Register** the `Greeter` class as a dependency in the container.
+2. **Resolve** the dependency when needed.
+3. **Use** the resolved dependency.
+
+## Advanced Usage
+
+Wireflow's flexibility shines in more complex scenarios, where you might need to work with interfaces, manage lifecycles, or inject dependencies automatically.
+
+### Example with Interface and Lifecycle Hooks
+
+Let’s look at a more advanced example:
+
+```python
+from __future__ import annotations
+
+import asyncio
+import abc
+
+from wireflow import container, inject, Provide
+
+# Define a greeter interface
+class Greeter(abc.ABC):
+    @abc.abstractmethod
+    def greet(self) -> str: ...
+
+
+# Define a service that implements the greeter interface
+class WelcomeService(Greeter):
+    def greet(self) -> str:
+        return "Hello from MyService!"
+
+    # Define static methods for initialization and destruction hooks
+    @staticmethod
+    async def on_init(service: WelcomeService):
+        print(f"Service {service.__class__.__name__} initialized")
+
+    @staticmethod
+    async def on_destroy(service: WelcomeService):
+        print(f"Service {service.__class__.__name__} destroyed")
+
+
+async def main() -> None:
+    # Register the service with lifecycle hooks and a request scope
+    await container.provide(
+        dependency=WelcomeService(),
+        singleton=True,
+        interface=Greeter,  # Registering as the Greeter interface
+        on_init=WelcomeService.on_init,
+        on_destroy=WelcomeService.on_destroy,
+        scope="request",  # Scoped to "request"
+    )
+
+    # Call a function without manually passing the service
+    await say_hello()
+
+    # Destroy the request scope after use
+    await container.destroy_scope("request")
+
+
+# Function that automatically receives the injected service
+@inject
+async def say_hello(service: Greeter = Provide[WelcomeService]):
+    print(service.greet())
+
+
+# Run the example
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### What’s Happening Here?
+
+1. **Interface Definition**: We define a `Greeter` interface using Python’s `abc` module.
+2. **Service Implementation**: The `WelcomeService` class implements the `Greeter` interface.
+3. **Lifecycle Hooks**: `on_init` and `on_destroy` methods are defined to perform actions when the service is initialized or destroyed.
+4. **Dependency Registration**: The `WelcomeService` is registered with the container as a singleton under the `Greeter` interface.
+5. **Automatic Injection**: The `say_hello` function receives the `WelcomeService` instance automatically, thanks to the `inject` decorator.
+6. **Scope Management**: The service is scoped to a "request", and the scope is destroyed after use.
+
+This approach makes it easy to swap out implementations, manage complex lifecycles, and keep your codebase clean and maintainable.
 
 ## Code of Conduct
 
-This project has adopted the [Contributor Covenant](https://www.contributor-covenant.org/) in version 2.1 as our code of
-conduct. Please see the details in our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). All contributors must abide by the code
-of conduct.
+This project has adopted the [Contributor Covenant](https://www.contributor-covenant.org/) version 2.1 as our code of conduct. Please see the details in our [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). All contributors must abide by the code of conduct.
 
 ## Working Language
 
-We decided to apply _English_ as the primary project language.
-
-Consequently, all content will be made available primarily in English.
-We also ask all interested people to use English as the preferred language to create issues,
-in their code (comments, documentation, etc.) and when you send requests to us.
-The application itself and all end-user facing content will be made available in other languages as needed.
+The primary language for this project is **English**. All content will be available in English, and we ask that all communication, issues, and contributions be made in English to ensure consistency and accessibility.
 
 ## Support and Feedback
 
-The following channels are available for discussions, feedback, and support requests:
+For discussions, feedback, or support, please use the following channels:
 
 <!-- markdownlint-disable MD033 -->
 | Type       | Channel                                                                                                                                                                       |
