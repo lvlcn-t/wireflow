@@ -4,26 +4,36 @@ from typing import Any
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from wireflow.dependency import Injector
-    from wireflow.dependency import DIContainer
     from wireflow.dependency import container
-    from wireflow.provider import Provide
+    from wireflow.dependency import DependencyMismatchError
+    from wireflow.dependency import DependencyNotFoundError
+    from wireflow.dependency import DIContainer
+    from wireflow.dependency import DIContainerError
+    from wireflow.dependency import Injector
     from wireflow.provider import inject
+    from wireflow.provider import Provide
+
 
 __all__ = [
-    "Injector",
-    "DIContainer",
     "container",
-    "Provide",
+    "DependencyMismatchError",
+    "DependencyNotFoundError",
+    "DIContainer",
+    "DIContainerError",
+    "Injector",
     "inject",
+    "Provide",
 ]
 
 _module_lookup = {
-    "Injector": "wireflow.dependency",
-    "DIContainer": "wireflow.dependency",
     "container": "wireflow.dependency",
-    "Provide": "wireflow.provider",
+    "DependencyMismatchError": "wireflow.dependency",
+    "DependencyNotFoundError": "wireflow.dependency",
+    "DIContainer": "wireflow.dependency",
+    "DIContainerError": "wireflow.dependency",
+    "Injector": "wireflow.dependency",
     "inject": "wireflow.provider",
+    "Provide": "wireflow.provider",
 }
 
 try:

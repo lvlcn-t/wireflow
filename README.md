@@ -150,7 +150,7 @@ async def main() -> None:
 
 # Function that automatically receives the injected service
 @inject
-async def say_hello(service: Greeter = Provide[WelcomeService]):
+async def say_hello(service: Greeter = Provide[Greeter]) -> None:
     print(service.greet())
 
 
