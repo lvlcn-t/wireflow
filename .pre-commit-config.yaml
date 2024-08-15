@@ -1,0 +1,15 @@
+ci:
+  autofix_commit_msg: |
+    fix(deps): [pre-commit.ci] auto fixes\n\nFor more information, see https://pre-commit.ci
+  autofix_prs: true
+  autoupdate_commit_msg: |
+    chore(deps): [pre-commit.ci] auto update\n\nFor more information, see https://pre-commit.ci
+  autoupdate_schedule: weekly
+
+repos:
+  # If this is used for business, a free license is required.
+  # It can be obtained from https://gitleaks.io/products.html
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
