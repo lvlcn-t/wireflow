@@ -24,16 +24,8 @@ class Injector(abc.ABC):
         factory: cabc.Callable[[], T] | None = None,
         name: str | None = None,
         scope: str | None = None,
-        on_init: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ) = None,
-        on_destroy: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ) = None,
+        on_init: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None,
+        on_destroy: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None,
     ) -> None:
         """Provide a dependency to the container.
 
@@ -97,17 +89,9 @@ class Dependency(t.Generic[T]):
     """Whether the dependency is a singleton or not."""
     initialized: bool = False
     """Whether the dependency has been initialized or not."""
-    on_init: (
-        cabc.Callable[[T], None]
-        | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-        | None
-    ) = None
+    on_init: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None
     """A function to call when the dependency is initialized."""
-    on_destroy: (
-        cabc.Callable[[T], None]
-        | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-        | None
-    ) = None
+    on_destroy: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None
     """A function to call when the dependency is destroyed."""
     _lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
@@ -186,24 +170,14 @@ class DIContainer(Injector):
         factory: cabc.Callable[[], T] | None = None,
         name: str | None = None,
         scope: str | None = None,
-        on_init: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ) = None,
-        on_destroy: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ) = None,
+        on_init: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None,
+        on_destroy: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None = None,
     ) -> None:
         """Provide a dependency to the container."""
         if name == "-1":
             raise ValueError("name cannot be a reserved keyword: '-1'")
 
-        await self._provide(
-            dependency, interface, factory, singleton, name, scope, on_init, on_destroy
-        )
+        await self._provide(dependency, interface, factory, singleton, name, scope, on_init, on_destroy)
 
     async def resolve(self, dependency: type[T], name: str | None = None) -> T:
         """Resolve a dependency from the container."""
@@ -250,16 +224,8 @@ class DIContainer(Injector):
         singleton: bool,
         name: str | None,
         scope: str | None,
-        on_init: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ),
-        on_destroy: (
-            cabc.Callable[[T], None]
-            | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]]
-            | None
-        ),
+        on_init: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None,
+        on_destroy: cabc.Callable[[T], None] | cabc.Callable[[T], cabc.Coroutine[t.Any, t.Any, None]] | None,
     ) -> None:
         if dependency is None and factory is None:
             raise ValueError("both dependency and factory cannot be None")
@@ -308,17 +274,13 @@ class DIContainer(Injector):
             if not info:
                 raise DependencyNotFoundError(f"No dependency found for {name}")
             if info.interface != dependency:
-                raise DependencyMismatchError(
-                    f"Dependency {name} is not of type {dependency}"
-                )
+                raise DependencyMismatchError(f"Dependency {name} is not of type {dependency}")
 
             for dep in deps:
                 if dep.value.__class__ == info.implementation:
                     return await dep.instantiate()
 
-            raise DependencyNotFoundError(
-                f"Dependency {name} not found in the registered instances"
-            )
+            raise DependencyNotFoundError(f"Dependency {name} not found in the registered instances")
 
 
 class DIContainerError(Exception):

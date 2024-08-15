@@ -1,8 +1,11 @@
-import unittest
 import abc
-from wireflow.dependency import DIContainer, Dependency, DependencyInfo
-import typing as t
 import collections.abc as cabc
+import typing as t
+import unittest
+
+from wireflow.dependency import Dependency
+from wireflow.dependency import DependencyInfo
+from wireflow.dependency import DIContainer
 
 T = t.TypeVar("T")
 
@@ -269,12 +272,8 @@ class DIContainerTests(unittest.IsolatedAsyncioTestCase):
             with self.subTest(tt["name"]):
                 c = DIContainer()
                 if tt["dep_name"] == "mismatch":
-                    c._dependencies[tt["iface"]] = [  # type: ignore
-                        Dependency(tt["dep"], tt["factory"], tt["singleton"])
-                    ]
-                    c._registry[tt["dep_name"]] = DependencyInfo(  # type: ignore
-                        interface=str, implementation=TestImplementation
-                    )
+                    c._dependencies[tt["iface"]] = [Dependency(tt["dep"], tt["factory"], tt["singleton"])]  # type: ignore
+                    c._registry[tt["dep_name"]] = DependencyInfo(interface=str, implementation=TestImplementation)  # type: ignore
                 elif tt["dep"] is not None or tt["factory"] is not None:
                     await c.provide(
                         tt["dep"],
@@ -290,9 +289,7 @@ class DIContainerTests(unittest.IsolatedAsyncioTestCase):
                 else:
                     val = t.cast(object, await c.resolve(tt["iface"], tt["dep_name"]))  # type: ignore
                     self.assertIsInstance(val, TestInterface)
-                    self.assertEqual(
-                        t.cast(TestInterface, val).do_something(), "something"
-                    )
+                    self.assertEqual(t.cast(TestInterface, val).do_something(), "something")
 
     async def test_resolve_all(self):
         class TestCase(t.Generic[T], t.TypedDict):
@@ -345,9 +342,7 @@ class DIContainerTests(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(len(results), len(tt["deps"]))
                     for dep in results:
                         self.assertIsInstance(dep, TestInterface)
-                        self.assertEqual(
-                            t.cast(TestInterface, dep).do_something(), "something"
-                        )
+                        self.assertEqual(t.cast(TestInterface, dep).do_something(), "something")
 
     async def test_delete(self):
         class TestCase(t.TypedDict):

@@ -1,9 +1,9 @@
 import asyncio
-from functools import wraps
-import typing as t
-import inspect
 import collections.abc as cabc
+import inspect
+import typing as t
 import warnings
+from functools import wraps
 
 from wireflow.dependency import container
 
@@ -75,9 +75,7 @@ def inject(func: cabc.Callable[P, T]) -> cabc.Callable[P, T]:
     return _inject_to_sync(func)
 
 
-def _inject_to_async(
-    func: cabc.Callable[P, cabc.Coroutine[t.Any, t.Any, T]]
-) -> cabc.Callable[P, cabc.Coroutine[t.Any, t.Any, T]]:
+def _inject_to_async(func: cabc.Callable[P, cabc.Coroutine[t.Any, t.Any, T]]) -> cabc.Callable[P, cabc.Coroutine[t.Any, t.Any, T]]:
     signature = inspect.signature(func)
 
     @wraps(func)

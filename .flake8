@@ -1,0 +1,21 @@
+[flake8]
+max-line-length = 132
+extend-ignore = 
+    # This warning is not PEP8 compliant, for more information refer to https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html#e203
+    # https://www.flake8rules.com/rules/E203.html
+    E203,
+    # Using the counterpart W504 instead.
+    # https://www.flake8rules.com/rules/W503.html
+    W503,
+    # The use of '...' in abstract classes are allowed to be in the same line.
+    # https://www.flake8rules.com/rules/E704.html
+    E704,
+
+exclude = 
+    # No need to traverse our git directory
+    .git,
+    # There's no value in checking cache directories
+    __pycache__,
+    # We don't need to check virtual environment directories
+    .venv,
+    venv
