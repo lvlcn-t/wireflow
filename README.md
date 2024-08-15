@@ -2,6 +2,8 @@
 
 <!-- markdownlint-disable MD033 -->
 <p align="center">
+    <a href="https://pypi.org/project/wireflow/" title="PyPI Version"><img alt="PyPI Version" src="https://img.shields.io/pypi/v/wireflow"></a>
+    <a href="https://pypi.org/project/wireflow/" title="Supported Python Versions"><img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/wireflow"></a>
     <a href="/../../commits/" title="Last Commit"><img alt="Last Commit" src="https://img.shields.io/github/last-commit/lvlcn-t/wireflow?style=flat"></a>
     <a href="/../../issues" title="Open Issues"><img alt="Open Issues" src="https://img.shields.io/github/issues/lvlcn-t/wireflow?style=flat"></a>
 </p>
