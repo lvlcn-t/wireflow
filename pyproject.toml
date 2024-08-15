@@ -1,0 +1,57 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "wireflow"
+version = "0.1.0"
+description = "A simple dependency injection library that allows you to provide and resolve dependencies."
+authors = ["lvlcn-t <75443136+lvlcn-t@users.noreply.github.com>"]
+license = "MIT"
+readme = "README.md"
+package-mode = true
+repository = "https://github.com/lvlcn-t/wireflow"
+keywords = [
+    "dependency-injection",
+    "DI",
+    "dependency-injection-container",
+    "dependency-injection-framework",
+    "dependency-injection-library",
+    "dependency-injection-python",
+    "dependency-injection-python-library",
+    "dependency-injection-python-framework",
+    "dependency-injection-python-container",
+]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+
+[tool.poetry.urls]
+"Source Code" = "https://github.com/lvlcn-t/wireflow"
+"Release Notes" = "https://github.com/lvlcn-t/wireflow/releases"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.2"
+flake8 = "*"
+black = "*"
+reorder-python-imports = "*"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = ["./tests"]
+
+[tool.coverage.run]
+omit = ["tests/*"]
+
+[tool.black]
+line-length = 132
